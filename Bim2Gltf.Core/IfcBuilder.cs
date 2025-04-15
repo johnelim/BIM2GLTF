@@ -3,20 +3,29 @@ using System.Numerics;
 
 namespace Bim2Gltf.Core
 {
-    public class ModelBuilder
+    public class IfcBuilder
     {
-        private readonly DatabaseIfc db;
-        private readonly IfcBuilding building;
-        private readonly IfcProject project;
+        private static DatabaseIfc db;
+        private static IfcBuilding building;
+        private static IfcProject project;
 
-        public ModelBuilder(string projectName = "")
+        public IfcBuilder(string description = "Sample")
         {
             db = new DatabaseIfc(ModelView.Ifc4NotAssigned);
-            building = new IfcBuilding(db, projectName + " Building");
-            project = new IfcProject(building, projectName);
+            building = new IfcBuilding(db, $"{description} Building");
+            project = new IfcProject(building, $"{description} Project");
         }
 
-        public string Save()
+        public static string CreateSample()
+        {
+            IfcBuilder builder = new IfcBuilder();
+
+            var outputFilePath = Save();
+
+            return outputFilePath;
+        }
+
+        public static string Save()
         {
             var tempFilePath = Path.ChangeExtension(Path.GetTempFileName(), ".ifc");
 

@@ -8,42 +8,27 @@ namespace Bim2Gltf.Tests
     [TestClass]
     public sealed class ModelBuilderTests
     {
-        private static ModelBuilder modelBuilder;
-
-        private int elementCount = 0;
-        private int ElementCount => elementCount++;
-
         [TestMethod]
-        public void CreateAllFrameMaterials()
+        public string CreateAllFrameMaterials()
         {
             // Arrange
-            modelBuilder = new ModelBuilder("Sample Ifc Elements");
+            IfcBuilder ifcBuilder = new IfcBuilder();
 
             Vector2 position = new Vector2(0, 0);
             Vector2 offset = new Vector2(3000, 0);
 
             // Act
             IEnumerable<FrameMaterial> frameMaterials = GetAllFrameMaterialSizes();
-            foreach (var frameMaterial in frameMaterials)
+            for (int i = 0; i < frameMaterials.Count(); i++)
             {
-                modelBuilder.CreateMember(frameMaterial, position + offset * ElementCount);
+                ifcBuilder.CreateMember(frameMaterials.ElementAt(i), position + offset * i);
             }
 
             // Assert
-            var outputPath = modelBuilder.Save();
-            OpenModel(outputPath);
-        }
+            string outputPath = IfcBuilder.Save();
+            TestHelper.OpenModel(outputPath);
 
-        private static void OpenModel(string path)
-        {
-            ProcessStartInfo startInfo = new ProcessStartInfo()
-            {
-                FileName = path,
-                UseShellExecute = true,
-                Verb = "open"
-            };
-
-            Process.Start(startInfo);
+            return outputPath;
         }
 
         private static IEnumerable<FrameMaterial> GetAllFrameMaterialSizes()

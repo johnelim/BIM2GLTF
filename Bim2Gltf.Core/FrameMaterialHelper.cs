@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Bim2Gltf.Core
+﻿namespace Bim2Gltf.Core
 {
     public static class FrameMaterialHelper
     {
@@ -33,21 +27,5 @@ namespace Bim2Gltf.Core
                 WallThickness = wallThickness,
             };
         }
-    }
-
-    public class FrameMaterial
-    {
-        public FrameMaterialType FrameMaterialType { get; set; }
-        public double Web { get; set; }
-        public double Flange { get; set; }
-        public double Lip { get; set; }
-        public double WallThickness { get; set; } = 2.0;
-    }
-
-    public enum FrameMaterialType
-    {
-        C,
-        Z,
-        I
     }
 }
