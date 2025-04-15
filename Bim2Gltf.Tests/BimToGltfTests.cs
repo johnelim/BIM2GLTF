@@ -10,7 +10,7 @@ namespace Bim2Gltf.Tests
         {
             ModelBuilderTests mbt = new ModelBuilderTests();
 
-            var outputIfc = mbt.CreateAllFrameMaterials();
+            string outputIfc = mbt.CreateAllFrameMaterials();
 
             string outputGlb = GltfHelper.Convert(outputIfc);
 

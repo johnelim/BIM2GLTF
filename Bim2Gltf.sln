@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.12.35521.163
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bim2Gltf.Startup", "Bim2Gltf.Startup\Bim2Gltf.Startup.csproj", "{CCD2E2CE-550F-4789-A364-6C81DD020D0A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bim2Gltf.Core", "Bim2Gltf.Core\Bim2Gltf.Core.csproj", "{1A83ED57-2CF7-4C2D-8B23-F6CC617BC227}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bim2Gltf.Tests", "Bim2Gltf.Tests\Bim2Gltf.Tests.csproj", "{C3B17370-2CF6-442A-B435-1249AD707620}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CCD2E2CE-550F-4789-A364-6C81DD020D0A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CCD2E2CE-550F-4789-A364-6C81DD020D0A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CCD2E2CE-550F-4789-A364-6C81DD020D0A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CCD2E2CE-550F-4789-A364-6C81DD020D0A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1A83ED57-2CF7-4C2D-8B23-F6CC617BC227}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1A83ED57-2CF7-4C2D-8B23-F6CC617BC227}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1A83ED57-2CF7-4C2D-8B23-F6CC617BC227}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1A83ED57-2CF7-4C2D-8B23-F6CC617BC227}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C3B17370-2CF6-442A-B435-1249AD707620}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C3B17370-2CF6-442A-B435-1249AD707620}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C3B17370-2CF6-442A-B435-1249AD707620}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C3B17370-2CF6-442A-B435-1249AD707620}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

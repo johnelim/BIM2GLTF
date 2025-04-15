@@ -36,14 +36,15 @@ namespace Bim2Gltf.Core
                 // Convert from Xbim geometry to Gltf Mesh
                 MESH mesh = CreateMesh(geometry, transform);
 
+                // Define the node holding the transform
                 NodeBuilder node = new NodeBuilder("BIM Element");
 
                 scene.AddRigidMesh(mesh, node);
             }
 
             // Save to GLB / GLTF
-            var outputFileName = Path.ChangeExtension(ifcPath, ".glb");
-            var model = scene.ToGltf2();
+            string outputFileName = Path.ChangeExtension(ifcPath, ".glb");
+            SharpGLTF.Schema2.ModelRoot model = scene.ToGltf2();
             model.SaveGLB(outputFileName);
 
             return outputFileName;
@@ -59,9 +60,9 @@ namespace Bim2Gltf.Core
 
             void AddTriangle(XbimPoint3D v1, XbimPoint3D v2, XbimPoint3D v3)
             {
-                v1 = v1 * transform;
-                v2 = v2 * transform;
-                v3 = v3 * transform;
+                v1 = v1 * transform * IfcToGltfWcs;
+                v2 = v2 * transform * IfcToGltfWcs;
+                v3 = v3 * transform * IfcToGltfWcs;
 
                 prim.AddTriangle(v1.ToMeshVertex(), v2.ToMeshVertex(), v3.ToMeshVertex());
             }
@@ -93,5 +94,11 @@ namespace Bim2Gltf.Core
         {
             return new VERTEX((float)p.X, (float)p.Y, (float)p.Z);
         }
+
+        /// <summary>
+        /// Ifc has out of screen direction as -Y direction
+        /// Gltf has out of screen direction as +Y direction
+        /// </summary>
+        private static XbimMatrix3D IfcToGltfWcs = XbimMatrix3D.CreateRotation(new XbimPoint3D(0, 1, 0), new XbimPoint3D(0, 0, 1));
     }
 }
