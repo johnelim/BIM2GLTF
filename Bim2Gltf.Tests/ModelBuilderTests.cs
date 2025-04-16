@@ -1,4 +1,5 @@
 ﻿using Bim2Gltf.Core;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Diagnostics;
 using System.Numerics;
 using System.Reflection;
@@ -9,49 +10,32 @@ namespace Bim2Gltf.Tests
     public sealed class ModelBuilderTests
     {
         [TestMethod]
-        public string CreateAllFrameMaterials()
+        public void SampleIfcToGlb_StructuralColumns()
         {
             // Arrange
-            IfcBuilder ifcBuilder = new IfcBuilder();
-
-            Vector2 position = new Vector2(0, 0);
-            Vector2 offset = new Vector2(3000, 0);
+            string outputIfc = IfcBuilder.CreateSample_Columns();
+            string outputGlb = GltfHelper.ConvertIfc(outputIfc);
 
             // Act
-            IEnumerable<FrameMaterial> frameMaterials = GetAllFrameMaterialSizes();
-            for (int i = 0; i < frameMaterials.Count(); i++)
-            {
-                ifcBuilder.CreateMember(frameMaterials.ElementAt(i), position + offset * i);
-            }
+            TestHelper.OpenModel(outputIfc);
+            TestHelper.OpenModel(outputGlb);
 
             // Assert
-            string outputPath = IfcBuilder.Save();
-            TestHelper.OpenModel(outputPath);
-
-            return outputPath;
+            // TODO: Implement reading glb making sure each mesh reflects to each Ifc geometry.
         }
 
-        private static IEnumerable<FrameMaterial> GetAllFrameMaterialSizes()
+        [TestMethod]
+        public void SampleIfcToGlb_Cladding()
         {
-            // Using reflection to iterate from all frame material sizes
-            Type frameMaterialHelper = typeof(FrameMaterialHelper);
+            // Arrange
+            string outputIfc = IfcBuilder.CreateSample_Cladding();
+            string outputGlb = GltfHelper.ConvertIfc(outputIfc);
 
-            // Nested classes are the member cross section type (i.e. C or Z channels)
-            Type[] crossSectionTypes = frameMaterialHelper.GetNestedTypes();
+            // Act
+            TestHelper.OpenModel(outputIfc);
+            TestHelper.OpenModel(outputGlb);
 
-            foreach (Type crossSectionType in crossSectionTypes)
-            {
-                string memberType = crossSectionType.Name;
-
-                // Inner loop are the exact sizes (100, 200, 300 etc.)
-                foreach (PropertyInfo crossSectionSize in crossSectionType.GetProperties(BindingFlags.Public | BindingFlags.Static))
-                {
-                    if (crossSectionSize.GetValue(null) is FrameMaterial value)
-                    {
-                        yield return value;
-                    }
-                }
-            }
+            // Assert
         }
     }
 }

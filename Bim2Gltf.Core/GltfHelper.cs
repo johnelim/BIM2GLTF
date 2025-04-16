@@ -12,13 +12,17 @@ namespace Bim2Gltf.Core
 
     public static class GltfHelper
     {
-        public static string Convert(string ifcPath)
+        public static string ConvertIfc(string ifcPath)
         {
             // Open the Ifc Model in memory
             using IfcStore ifcStore = IfcStore.Open(ifcPath);
 
             // Tessellate the model using Xbim Geometry Engine
-            Xbim3DModelContext geometryContext = new Xbim3DModelContext(ifcStore);
+            Xbim3DModelContext geometryContext = new Xbim3DModelContext(ifcStore)
+            {
+                // Enable multithreading
+                MaxThreads = Environment.ProcessorCount
+            };
             geometryContext.CreateContext();
 
             // Initialize a Gltf Scene
@@ -36,8 +40,9 @@ namespace Bim2Gltf.Core
                 // Convert from Xbim geometry to Gltf Mesh
                 MESH mesh = CreateMesh(geometry, transform);
 
-                // Define the node holding the transform
+                // Define the node holding the transform, rotating CW along +X axis
                 NodeBuilder node = new NodeBuilder("BIM Element");
+                node.WorldMatrix = IfcToGltfWcs.ToStandardMatrix();
 
                 scene.AddRigidMesh(mesh, node);
             }
@@ -50,6 +55,13 @@ namespace Bim2Gltf.Core
             return outputFileName;
         }
 
+
+        /// <summary>
+        /// Ifc has out of screen direction as -Y direction
+        /// Gltf has out of screen direction as +Y direction
+        /// </summary>
+        private static XbimMatrix3D IfcToGltfWcs = XbimMatrix3D.CreateRotation(new XbimPoint3D(0, 1, 0), new XbimPoint3D(0, 0, 1));
+
         private static MESH CreateMesh(XbimShapeGeometry shape, XbimMatrix3D transform)
         {
             MaterialBuilder material = MaterialBuilder.CreateDefault();
@@ -60,11 +72,13 @@ namespace Bim2Gltf.Core
 
             void AddTriangle(XbimPoint3D v1, XbimPoint3D v2, XbimPoint3D v3)
             {
-                v1 = v1 * transform * IfcToGltfWcs;
-                v2 = v2 * transform * IfcToGltfWcs;
-                v3 = v3 * transform * IfcToGltfWcs;
 
-                prim.AddTriangle(v1.ToMeshVertex(), v2.ToMeshVertex(), v3.ToMeshVertex());
+
+                prim.AddTriangle(
+                    (v1 * transform).ToMeshVertex(),
+                    (v2 * transform).ToMeshVertex(),
+                    (v3 * transform).ToMeshVertex()
+                    );
             }
 
             foreach (WexBimMeshFace? face in shape.Faces)
@@ -89,16 +103,5 @@ namespace Bim2Gltf.Core
 
             return mesh;
         }
-
-        private static VERTEX ToMeshVertex(this XbimPoint3D p)
-        {
-            return new VERTEX((float)p.X, (float)p.Y, (float)p.Z);
-        }
-
-        /// <summary>
-        /// Ifc has out of screen direction as -Y direction
-        /// Gltf has out of screen direction as +Y direction
-        /// </summary>
-        private static XbimMatrix3D IfcToGltfWcs = XbimMatrix3D.CreateRotation(new XbimPoint3D(0, 1, 0), new XbimPoint3D(0, 0, 1));
     }
 }
