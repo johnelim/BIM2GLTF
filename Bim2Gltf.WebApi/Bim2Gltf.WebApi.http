@@ -1,0 +1,6 @@
+@Bim2Gltf.WebApi_HostAddress = http://localhost:5107
+
+GET {{Bim2Gltf.WebApi_HostAddress}}/api/conversion/
+Accept: application/json
+
+###
