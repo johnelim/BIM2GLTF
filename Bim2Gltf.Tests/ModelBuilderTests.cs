@@ -37,5 +37,21 @@ namespace Bim2Gltf.Tests
 
             // Assert
         }
+
+        [TestMethod]
+        public void SampleIfcToGlb_Cladding2()
+        {
+            // Arrange
+            IfcBuilder ifcBuilder = new IfcBuilder("Sample Ifc - Corrugated Cladding - Rotated.ifc");
+            ifcBuilder.CreateSample_Cladding2();
+            string outputIfc = ifcBuilder.Save();
+
+            // Act
+            string outputGlb = GltfHelper.ConvertIfc(outputIfc);
+            TestHelper.OpenModel(outputIfc);
+            TestHelper.OpenModel(outputGlb);
+
+            // Assert
+        }
     }
 }

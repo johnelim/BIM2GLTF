@@ -37,6 +37,14 @@ namespace BimBuilder
             CreateCladdingMember(CladdingMaterialHelper.Corrugated, position, claddingLength);
         }
 
+        public void CreateSample_Cladding2()
+        {
+            Vector3 startPt = Vector3.Zero;
+            Vector3 endPt = new Vector3(1000, 1000, 1000);
+
+            CreateCladdingMember(CladdingMaterialHelper.Corrugated, startPt, endPt, 0);
+        }
+
         public string Save()
         {
             string tempFilePath = Path.ChangeExtension(Path.GetTempFileName(), ".ifc");
@@ -53,16 +61,16 @@ namespace BimBuilder
 
         private IfcProfileDef Create2DProfile(CladdingMaterial claddingMaterial)
         {
-            var segmentWidth = claddingMaterial.Profile.Last().X;
-            var numOfSegments = claddingMaterial.CoverWidth / segmentWidth;
+            float segmentWidth = claddingMaterial.Profile.Last().X;
+            double numOfSegments = claddingMaterial.CoverWidth / segmentWidth;
 
             List<IfcCartesianPoint> polyPts = new List<IfcCartesianPoint>();
 
             for (int i = 0; i < numOfSegments; i++)
             {
-                var offsetX = i * segmentWidth;
+                float offsetX = i * segmentWidth;
 
-                var profilePts = claddingMaterial.Profile.Select(p => new Vector2(p.X + offsetX, p.Y).ToCartesianPt(db));
+                IEnumerable<IfcCartesianPoint> profilePts = claddingMaterial.Profile.Select(p => new Vector2(p.X + offsetX, p.Y).ToCartesianPt(db));
 
                 polyPts.AddRange(profilePts);
             }
@@ -149,11 +157,66 @@ namespace BimBuilder
 
             IfcCovering ifcCovering = new IfcCovering(building, objectPlacement, productRep);
         }
+
+        private void CreateCladdingMember(CladdingMaterial cladding, Vector3 startPt, Vector3 endPt, double rotDeg)
+        {
+            IfcProfileDef profile2D = Create2DProfile(cladding);
+
+            IfcExtrudedAreaSolid profile3D = new IfcExtrudedAreaSolid(profile2D, (endPt - startPt).Length());
+
+            IfcShapeRepresentation shapeRep = new IfcShapeRepresentation(profile3D);
+
+            IfcProductDefinitionShape productRep = new IfcProductDefinitionShape(shapeRep);
+
+            IfcAxis2Placement3D axis2Placement = CreateAxis2Placement(startPt, endPt, rotDeg);
+
+            IfcLocalPlacement objectPlacement = new IfcLocalPlacement(axis2Placement);
+
+            IfcCovering ifcCovering = new IfcCovering(building, objectPlacement, productRep);
+        }
+
+        /// <summary>
+        /// Parametrically determine length from start and end points
+        /// </summary>
+        private IfcAxis2Placement3D CreateAxis2Placement(Vector3 startPt, Vector3 endPt, double rotDeg)
+        {
+            Vector3 extrusionVector = (endPt - startPt);
+            float extrusionLength = extrusionVector.Length();
+
+            Vector3 unitZ = Vector3.UnitZ;
+            Vector3 newUnitZ = Vector3.Normalize(extrusionVector);
+
+            double cosTheta = Math.Cos(rotDeg);
+            double sinTheta = Math.Sin(rotDeg);
+            Vector3 rotatedReferenceVector = Vector3.Multiply((float)cosTheta, unitZ) +
+                Vector3.Multiply((float)sinTheta, Vector3.Cross(newUnitZ, unitZ)) +
+                Vector3.Multiply((float)(Vector3.Dot(newUnitZ, unitZ) * (1 - cosTheta)), newUnitZ);
+
+            Vector3 refDirection = Vector3.Cross(extrusionVector, Vector3.UnitZ);
+            Vector3 refDirectionNormal = Vector3.Normalize(refDirection);
+
+            if (refDirectionNormal == Vector3.UnitZ)
+            {
+                refDirectionNormal = Vector3.UnitX;
+            }
+
+            IfcDirection axis = new IfcDirection(db, extrusionVector.X, extrusionVector.Y, extrusionVector.Z);
+            IfcDirection refDir = new IfcDirection(db, refDirectionNormal.X, refDirectionNormal.Y, refDirectionNormal.Z);
+            IfcCartesianPoint position = startPt.ToCartesianPt(db);
+
+            return new IfcAxis2Placement3D(position, axis, refDir);
+        }
+
         #endregion
     }
 
     public static class GeometryGymExtensions
     {
+        public static IfcCartesianPoint ToCartesianPt(this Vector3 p, DatabaseIfc db)
+        {
+            return new IfcCartesianPoint(db, p.X, p.Y, p.Z);
+        }
+
         public static IfcCartesianPoint ToCartesianPt(this Vector2 p, DatabaseIfc db)
         {
             return new IfcCartesianPoint(db, p.X, p.Y);
