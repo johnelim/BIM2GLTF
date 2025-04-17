@@ -4,6 +4,7 @@ using SharpGLTF.Scenes;
 using Xbim.Common.Geometry;
 using Xbim.Ifc;
 using Xbim.ModelGeometry.Scene;
+using BimBuilder;
 
 namespace Bim2Gltf.Core
 {
@@ -102,6 +103,11 @@ namespace Bim2Gltf.Core
             }
 
             return mesh;
+        }
+
+        private static VERTEX ToMeshVertex(this XbimPoint3D p)
+        {
+            return new VERTEX((float)p.X, (float)p.Y, (float)p.Z);
         }
     }
 }

@@ -1,17 +1,11 @@
 ﻿using System.Numerics;
 using Xbim.Common.Geometry;
 
-namespace Bim2Gltf.Core
+namespace BimBuilder
 {
-    using VERTEX = SharpGLTF.Geometry.VertexTypes.VertexPosition;
 
     public static class XbimExtensions
     {
-        public static VERTEX ToMeshVertex(this XbimPoint3D p)
-        {
-            return new VERTEX((float)p.X, (float)p.Y, (float)p.Z);
-        }
-
         public static Matrix4x4 ToStandardMatrix(this XbimMatrix3D m)
         {
             XbimVector3D t = m.Translation;

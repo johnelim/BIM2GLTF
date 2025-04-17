@@ -1,13 +1,13 @@
 ﻿using GeometryGym.Ifc;
 using System.Numerics;
 
-namespace Bim2Gltf.Core
+namespace BimBuilder
 {
     public class IfcBuilder
     {
-        private static DatabaseIfc db;
-        private static IfcBuilding building;
-        private static IfcProject project;
+        private DatabaseIfc db;
+        private IfcBuilding building;
+        private IfcProject project;
 
         public IfcBuilder(string description = "Sample")
         {
@@ -16,10 +16,8 @@ namespace Bim2Gltf.Core
             project = new IfcProject(building, $"{description} Project");
         }
 
-        public static string CreateSample_Columns()
+        public void CreateSample_Columns()
         {
-            IfcBuilder ifcBuilder = new IfcBuilder();
-
             double memberLength = 3000;
             Vector2 position = new Vector2(0, 0);
             Vector2 offset = new Vector2(3000, 0);
@@ -27,29 +25,19 @@ namespace Bim2Gltf.Core
             IEnumerable<FrameMaterial> frameMaterials = FrameMaterialHelper.GetAllFrameMaterialSizes();
             for (int i = 0; i < frameMaterials.Count(); i++)
             {
-                ifcBuilder.CreateStructuralMember(frameMaterials.ElementAt(i), position + offset * i, memberLength);
+                CreateStructuralMember(frameMaterials.ElementAt(i), position + offset * i, memberLength);
             }
-
-            string outputFileName = "Sample Ifc - Structural Columns.ifc";
-            db.WriteFile(outputFileName);
-            return outputFileName;
         }
 
-        public static string CreateSample_Cladding()
+        public void CreateSample_Cladding()
         {
-            IfcBuilder ifcBuilder = new IfcBuilder();
-
             double claddingLength = 6000.0;
             Vector2 position = Vector2.Zero;
 
-            ifcBuilder.CreateCladdingMember(CladdingMaterialHelper.Corrugated, position, claddingLength);
-
-            string outputFileName = "Sample Ifc - Cladding.ifc";
-            db.WriteFile(outputFileName);
-            return outputFileName;
+            CreateCladdingMember(CladdingMaterialHelper.Corrugated, position, claddingLength);
         }
 
-        public static string Save()
+        public string Save()
         {
             string tempFilePath = Path.ChangeExtension(Path.GetTempFileName(), ".ifc");
 

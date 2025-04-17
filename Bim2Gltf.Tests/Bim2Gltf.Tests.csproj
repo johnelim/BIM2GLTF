@@ -26,6 +26,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Bim2Gltf.Core\Bim2Gltf.Core.csproj" />
+    <ProjectReference Include="..\IfcBuilder\BimBuilder.csproj" />
   </ItemGroup>
 
   <ItemGroup>

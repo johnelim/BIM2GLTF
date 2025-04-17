@@ -1,8 +1,5 @@
 ﻿using Bim2Gltf.Core;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Diagnostics;
-using System.Numerics;
-using System.Reflection;
+using BimBuilder;
 
 namespace Bim2Gltf.Tests
 {
@@ -13,25 +10,28 @@ namespace Bim2Gltf.Tests
         public void SampleIfcToGlb_StructuralColumns()
         {
             // Arrange
-            string outputIfc = IfcBuilder.CreateSample_Columns();
-            string outputGlb = GltfHelper.ConvertIfc(outputIfc);
+            IfcBuilder ifcBuilder = new IfcBuilder("Sample Ifc - Structural Columns.ifc");
+            ifcBuilder.CreateSample_Columns();
+            string outputIfc = ifcBuilder.Save();
 
             // Act
+            string outputGlb = GltfHelper.ConvertIfc(outputIfc);
             TestHelper.OpenModel(outputIfc);
             TestHelper.OpenModel(outputGlb);
 
             // Assert
-            // TODO: Implement reading glb making sure each mesh reflects to each Ifc geometry.
         }
 
         [TestMethod]
         public void SampleIfcToGlb_Cladding()
         {
             // Arrange
-            string outputIfc = IfcBuilder.CreateSample_Cladding();
-            string outputGlb = GltfHelper.ConvertIfc(outputIfc);
+            IfcBuilder ifcBuilder = new IfcBuilder("Sample Ifc - Corrugated Cladding.ifc");
+            ifcBuilder.CreateSample_Cladding();
+            string outputIfc = ifcBuilder.Save();
 
             // Act
+            string outputGlb = GltfHelper.ConvertIfc(outputIfc);
             TestHelper.OpenModel(outputIfc);
             TestHelper.OpenModel(outputGlb);
 

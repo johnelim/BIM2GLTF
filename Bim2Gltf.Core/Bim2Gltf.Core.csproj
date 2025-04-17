@@ -7,11 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="GeometryGymIFC_Core" Version="25.2.25" />
     <PackageReference Include="SharpGLTF.Core" Version="1.0.3" />
     <PackageReference Include="SharpGLTF.Toolkit" Version="1.0.3" />
-    <PackageReference Include="Xbim.Essentials" Version="6.0.517" />
     <PackageReference Include="Xbim.Geometry" Version="5.1.820" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\IfcBuilder\BimBuilder.csproj" />
   </ItemGroup>
 
 </Project>

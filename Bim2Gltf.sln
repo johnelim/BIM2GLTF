@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bim2Gltf.Tests", "Bim2Gltf.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bim2Gltf.WebApi", "Bim2Gltf.WebApi\Bim2Gltf.WebApi.csproj", "{B994CC46-2997-45E7-BF95-74661F2CC671}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BimBuilder", "IfcBuilder\BimBuilder.csproj", "{6BC8DB66-98EF-4E1E-898B-A5D6DFB4AF24}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{B994CC46-2997-45E7-BF95-74661F2CC671}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B994CC46-2997-45E7-BF95-74661F2CC671}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B994CC46-2997-45E7-BF95-74661F2CC671}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6BC8DB66-98EF-4E1E-898B-A5D6DFB4AF24}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6BC8DB66-98EF-4E1E-898B-A5D6DFB4AF24}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6BC8DB66-98EF-4E1E-898B-A5D6DFB4AF24}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6BC8DB66-98EF-4E1E-898B-A5D6DFB4AF24}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

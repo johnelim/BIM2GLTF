@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace Bim2Gltf.Core
+namespace BimBuilder
 {
     public static class FrameMaterialHelper
     {

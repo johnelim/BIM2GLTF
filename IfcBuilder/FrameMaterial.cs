@@ -1,4 +1,4 @@
-﻿namespace Bim2Gltf.Core
+﻿namespace BimBuilder
 {
     public class FrameMaterial
     {
