@@ -19,8 +19,10 @@ namespace BimBuilder
 
         public void CreateSample(BimContainer bimContainer)
         {
-            // Slab
             CreateSlabMember(bimContainer.Slab.Outline, bimContainer.Slab.Depth);
+            CreateFootings(bimContainer.Footings);
+            bimContainer.FrameMembers.ForEach(m => CreateStructuralMember(m.FrameMaterial, m.StartPt, m.EndPt, m.Rotation));
+            bimContainer.Roofs.ForEach(r => CreateCladdingMember(r.CladdingMaterial, r.StartPt, r.EndPt, 0));
         }
 
         public void CreateSample_Columns()
@@ -115,8 +117,8 @@ namespace BimBuilder
                     return new IfcIShapeProfileDef(
                         db,
                         "I" + $"{frameMaterial.Web}{frameMaterial.Flange}{frameMaterial.Lip}",
-                        frameMaterial.Web,
                         frameMaterial.Flange,
+                        frameMaterial.Web,
                         frameMaterial.WallThickness,
                         frameMaterial.WallThickness);
                 default:
@@ -140,6 +142,27 @@ namespace BimBuilder
 
             // Create local object placement
             IfcLocalPlacement placement = new IfcLocalPlacement(new IfcAxis2Placement2D(new IfcCartesianPoint(db, position.X, position.Y)));
+
+            // Create a member
+            IfcMember ifcMember = new IfcMember(building, placement, productRep);
+        }
+
+        private void CreateStructuralMember(FrameMaterial frameMaterial, Vector3 startPt, Vector3 endPt, double rotDeg)
+        {
+            // Define profile 2D
+            IfcProfileDef profile2D = Create2DProfile(frameMaterial);
+
+            // Define profile 3D by extrusion
+            IfcExtrudedAreaSolid profile3D = new IfcExtrudedAreaSolid(profile2D, (endPt - startPt).Length());
+
+            // Use 3D profile as shape representation from extrusion
+            IfcShapeRepresentation shapeRep = new IfcShapeRepresentation(profile3D);
+
+            // Create a product definition shape
+            IfcProductDefinitionShape productRep = new IfcProductDefinitionShape(shapeRep);
+
+            // Create local object placement
+            IfcLocalPlacement placement = new IfcLocalPlacement(CreateAxis2Placement(startPt, endPt, rotDeg));
 
             // Create a member
             IfcMember ifcMember = new IfcMember(building, placement, productRep);
@@ -191,10 +214,34 @@ namespace BimBuilder
             profile3D.ExtrudedDirection = new IfcDirection(db, 0, 0, -1);
 
             IfcShapeRepresentation shape = new IfcShapeRepresentation(profile3D);
-            
+
             IfcProductDefinitionShape product = new IfcProductDefinitionShape(shape);
 
             IfcSlab slab = new IfcSlab(building, null, product);
+        }
+
+        private void CreateFootings(List<BimFooting> footings)
+        {
+            // all footings are identical, use a single representation
+            var profile2D = new IfcRectangleProfileDef(db, "footing", footings[0].Size, footings[0].Size);
+
+            // We extruded to -Z axis
+            IfcExtrudedAreaSolid profile3D = new IfcExtrudedAreaSolid(profile2D, footings[0].Depth);
+            profile3D.ExtrudedDirection = new IfcDirection(db, 0, 0, -1);
+
+            IfcShapeRepresentation shape = new IfcShapeRepresentation(profile3D);
+
+            IfcProductDefinitionShape product = new IfcProductDefinitionShape(shape);
+
+            // Use local placement to "copy" the footings
+            for (int i = 0; i < footings.Count; i++)
+            {
+                var footingPosition = footings[i].Position;
+
+                var placement = new IfcAxis2Placement2D(footingPosition.ToCartesianPt(db));
+
+                IfcFooting footing = new IfcFooting(building, new IfcLocalPlacement(placement), product);
+            }
         }
 
         /// <summary>
@@ -207,19 +254,20 @@ namespace BimBuilder
 
             Vector3 unitZ = Vector3.UnitZ;
             Vector3 newUnitZ = Vector3.Normalize(extrusionVector);
+            var dot = Vector3.Dot(unitZ, newUnitZ);
 
-            double cosTheta = Math.Cos(rotDeg);
-            double sinTheta = Math.Sin(rotDeg);
-            Vector3 rotatedReferenceVector = Vector3.Multiply((float)cosTheta, unitZ) +
-                Vector3.Multiply((float)sinTheta, Vector3.Cross(newUnitZ, unitZ)) +
-                Vector3.Multiply((float)(Vector3.Dot(newUnitZ, unitZ) * (1 - cosTheta)), newUnitZ);
+            var refDirectionNormal = Vector3.UnitX;
 
-            Vector3 refDirection = Vector3.Cross(extrusionVector, Vector3.UnitZ);
-            Vector3 refDirectionNormal = Vector3.Normalize(refDirection);
-
-            if (refDirectionNormal == Vector3.UnitZ)
+            if (dot != 1)
             {
-                refDirectionNormal = Vector3.UnitX;
+                double cosTheta = Math.Cos(rotDeg);
+                double sinTheta = Math.Sin(rotDeg);
+                Vector3 rotatedReferenceVector = Vector3.Multiply((float)cosTheta, unitZ) +
+                    Vector3.Multiply((float)sinTheta, Vector3.Cross(newUnitZ, unitZ)) +
+                    Vector3.Multiply((float)(Vector3.Dot(newUnitZ, unitZ) * (1 - cosTheta)), newUnitZ);
+
+                Vector3 refDirection = Vector3.Cross(extrusionVector, Vector3.UnitZ);
+                refDirectionNormal = Vector3.Normalize(refDirection);
             }
 
             IfcDirection axis = new IfcDirection(db, extrusionVector.X, extrusionVector.Y, extrusionVector.Z);

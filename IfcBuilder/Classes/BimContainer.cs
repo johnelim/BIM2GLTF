@@ -5,6 +5,7 @@ namespace BimBuilder.Classes
     public class BimContainer
     {
         public BimSlab Slab { get; set; }
+        public List<BimFooting> Footings { get; set; }
         public List<BimCladding> Walls { get; set; }
         public List<BimCladding> Roofs { get; set; }
         public List<BimFrameMember> FrameMembers { get; set; }
@@ -23,6 +24,20 @@ namespace BimBuilder.Classes
     {
         public double Depth { get; set; }
         public List<Vector2> Outline { get; set; }
+    }
+
+    public class BimFooting
+    {
+        public Vector2 Position { get; set; }
+        public double Depth { get; set; }
+        public double Size { get; set; }
+        public FootingType Type { get; set; }
+    }
+
+    public enum FootingType
+    {
+        Block, // Square
+        Bored // Circular
     }
 
     public class BimCladding

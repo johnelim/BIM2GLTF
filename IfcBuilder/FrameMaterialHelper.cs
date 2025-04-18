@@ -8,6 +8,7 @@ namespace BimBuilder
         public static class C
         {
             public static FrameMaterial C100 => CreateMaterial(FrameMaterialType.C, 100, 50, 15, 2);
+            public static FrameMaterial C150 => CreateMaterial(FrameMaterialType.C, 150, 50, 15, 2);
             public static FrameMaterial C200 => CreateMaterial(FrameMaterialType.C, 200, 75, 20, 2);
             public static FrameMaterial C250 => CreateMaterial(FrameMaterialType.C, 250, 75, 20, 2);
         }

@@ -61,7 +61,7 @@ namespace Bim2Gltf.Core
         /// Ifc has out of screen direction as -Y direction
         /// Gltf has out of screen direction as +Y direction
         /// </summary>
-        private static XbimMatrix3D IfcToGltfWcs = XbimMatrix3D.CreateRotation(new XbimPoint3D(0, 1, 0), new XbimPoint3D(0, 0, 1));
+        private static XbimMatrix3D IfcToGltfWcs = XbimMatrix3D.CreateRotation(new XbimPoint3D(0, 0, 1), new XbimPoint3D(0, 1, 0));
 
         private static MESH CreateMesh(XbimShapeGeometry shape, XbimMatrix3D transform)
         {
