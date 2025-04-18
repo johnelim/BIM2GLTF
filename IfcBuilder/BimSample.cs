@@ -41,6 +41,7 @@ namespace BimBuilder
                 }
             };
 
+            bimContainer.FrameMembers = new List<BimFrameMember>();
             List<BimFooting> footings = new List<BimFooting>();
             List<BimFrameMember> columns = new List<BimFrameMember>();
             List<BimFrameMember> rafters = new List<BimFrameMember>();
@@ -49,9 +50,9 @@ namespace BimBuilder
             float x = 0;
             float startY = -roofOverhang;
             float endY = warehouseWidth + roofOverhang;
-            float z = eaveHeight + (float)(0.5 * rafterMaterial.Web);
-            float purlinZ = z + (float)(0.5 * rafterMaterial.Web);
-            float claddingZ = purlinZ + (float)(purlinMaterial.Web);
+            float rafterZ = eaveHeight + (float)(0.5 * rafterMaterial.Web);
+            float purlinZ = eaveHeight + (float)(rafterMaterial.Web + 0.5 * purlinMaterial.Web);
+            float claddingZ = purlinZ + (float)(0.5 * purlinMaterial.Web + claddingMaterial.RibHeight);
 
             // Footings and Columns
             void AddNewFootingAndColumn(Vector2 pos)
@@ -76,8 +77,8 @@ namespace BimBuilder
             {
                 rafters.Add(new BimFrameMember()
                 {
-                    StartPt = new Vector3(xPos, startY, z),
-                    EndPt = new Vector3(xPos, endY, z),
+                    StartPt = new Vector3(xPos, startY, rafterZ),
+                    EndPt = new Vector3(xPos, endY, rafterZ),
                     FrameMaterial = rafterMaterial
                 });
             }
@@ -99,21 +100,32 @@ namespace BimBuilder
             }
 
             bimContainer.Footings = footings;
-            bimContainer.FrameMembers = columns.Concat(rafters).ToList();
+            bimContainer.FrameMembers.AddRange(columns);
+            bimContainer.FrameMembers.AddRange(rafters);
 
             // purlins
             float totalRoofWidth = 2 * roofOverhang + warehouseWidth;
             int numOfPurlins = (int)(totalRoofWidth / purlinSpacing);
             var purlins = new List<BimFrameMember>();
+
             void AddPurlin(float yPos)
             {
-                
+                purlins.Add(new BimFrameMember()
+                {
+                    FrameMaterial = purlinMaterial,
+                    StartPt = new Vector3(0, yPos, purlinZ),
+                    EndPt = new Vector3(warehouseLength, yPos, purlinZ)
+                });
             }
 
-            for (int i = 0; i < numOfPurlins; i++)
+            float startYPurlin = -roofOverhang;
+
+            for (int i = 1; i < numOfPurlins; i++)
             {
-                
+                AddPurlin(startYPurlin + i * purlinSpacing);
             }
+
+            bimContainer.FrameMembers.AddRange(purlins);
 
             // roof claddings
             float coveredRoof = 0;
