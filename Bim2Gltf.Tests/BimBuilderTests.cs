@@ -1,10 +1,11 @@
 ﻿using Bim2Gltf.Core;
 using BimBuilder;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Bim2Gltf.Tests
 {
     [TestClass]
-    public sealed class ModelBuilderTests
+    public sealed class BimBuilderTests
     {
         [TestMethod]
         public void SampleIfcToGlb_StructuralColumns()
@@ -52,6 +53,19 @@ namespace Bim2Gltf.Tests
             TestHelper.OpenModel(outputGlb);
 
             // Assert
+        }
+
+        [TestMethod]
+        public void SampleIfcToGlb_Warehouse()
+        {
+            IfcBuilder ifcBuilder = new IfcBuilder("Sample Ifc - Warehouse.ifc");
+            ifcBuilder.CreateSample(BimSampleFactory.Warehouse());
+            string outputIfc = ifcBuilder.Save();
+
+            // Act
+            string outputGlb = GltfHelper.ConvertIfc(outputIfc);
+            TestHelper.OpenModel(outputIfc);
+            TestHelper.OpenModel(outputGlb);
         }
     }
 }

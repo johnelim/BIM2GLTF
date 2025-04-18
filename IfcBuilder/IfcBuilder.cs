@@ -1,4 +1,5 @@
-﻿using GeometryGym.Ifc;
+﻿using BimBuilder.Classes;
+using GeometryGym.Ifc;
 using System.Numerics;
 
 namespace BimBuilder
@@ -14,6 +15,12 @@ namespace BimBuilder
             db = new DatabaseIfc(ModelView.Ifc4NotAssigned);
             building = new IfcBuilding(db, $"{description} Building");
             project = new IfcProject(building, $"{description} Project");
+        }
+
+        public void CreateSample(BimContainer bimContainer)
+        {
+            // Slab
+            CreateSlabMember(bimContainer.Slab.Outline, bimContainer.Slab.Depth);
         }
 
         public void CreateSample_Columns()
@@ -75,9 +82,9 @@ namespace BimBuilder
                 polyPts.AddRange(profilePts);
             }
 
-            IfcPolyline polyCurve = new IfcPolyline(polyPts);
+            IfcPolyline polyline = new IfcPolyline(polyPts);
 
-            IfcCenterLineProfileDef openProfileDef = new IfcCenterLineProfileDef(claddingMaterial.Name, polyCurve, claddingMaterial.Thickness);
+            IfcCenterLineProfileDef openProfileDef = new IfcCenterLineProfileDef(claddingMaterial.Name, polyline, claddingMaterial.Thickness);
 
             return openProfileDef;
         }
@@ -175,6 +182,21 @@ namespace BimBuilder
             IfcCovering ifcCovering = new IfcCovering(building, objectPlacement, productRep);
         }
 
+        private void CreateSlabMember(List<Vector2> outline, double depth)
+        {
+            IfcArbitraryClosedProfileDef profile2D = new IfcArbitraryClosedProfileDef("Slab", outline.ToPolyline(db));
+
+            // We extruded to -Z axis
+            IfcExtrudedAreaSolid profile3D = new IfcExtrudedAreaSolid(profile2D, depth);
+            profile3D.ExtrudedDirection = new IfcDirection(db, 0, 0, -1);
+
+            IfcShapeRepresentation shape = new IfcShapeRepresentation(profile3D);
+            
+            IfcProductDefinitionShape product = new IfcProductDefinitionShape(shape);
+
+            IfcSlab slab = new IfcSlab(building, null, product);
+        }
+
         /// <summary>
         /// Parametrically determine length from start and end points
         /// </summary>
@@ -220,6 +242,11 @@ namespace BimBuilder
         public static IfcCartesianPoint ToCartesianPt(this Vector2 p, DatabaseIfc db)
         {
             return new IfcCartesianPoint(db, p.X, p.Y);
+        }
+
+        public static IfcPolyline ToPolyline(this List<Vector2> pts, DatabaseIfc db)
+        {
+            return new IfcPolyline(pts.Select(p => p.ToCartesianPt(db)));
         }
     }
 }

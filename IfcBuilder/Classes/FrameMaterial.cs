@@ -1,4 +1,4 @@
-﻿namespace BimBuilder
+﻿namespace BimBuilder.Classes
 {
     public class FrameMaterial
     {
