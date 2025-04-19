@@ -42,3 +42,9 @@ It leverages the **xBIM Toolkit** for parsing and tessellating IFC geometries, *
 ```bash
 git clone https://github.com/johnelim/BIM2GLTF.git
 cd BIM2GLTF
+
+### Run the Test Explorer in Visual Studio
+keyboard shortcut Ctrl+R, Ctrl+T
+
+### Sample Outputs
+![SampleWarehouse](https://github.com/user-attachments/assets/feb60a72-92e6-435b-8250-30de5de65005)
